@@ -1,0 +1,79 @@
+-- Drop and recreate the database
+DROP DATABASE IF EXISTS bankdb;
+CREATE DATABASE bankdb;
+USE bankdb;
+
+-- ==============================
+-- USERS TABLE
+-- ==============================
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    status ENUM('PENDING','APPROVED','BLOCKED') DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==============================
+-- ACCOUNTS TABLE
+-- ==============================
+CREATE TABLE accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    account_number VARCHAR(20) UNIQUE NOT NULL,
+    account_type ENUM('SAVINGS','CURRENT') NOT NULL,
+    balance DECIMAL(15,2) DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- ==============================
+-- TRANSACTIONS TABLE
+-- ==============================
+CREATE TABLE transactions (
+    txn_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    from_account VARCHAR(20),
+    to_account VARCHAR(20),
+    amount DECIMAL(15,2) NOT NULL,
+    txn_type ENUM('DEPOSIT','WITHDRAWAL','TRANSFER','FAILED_TRANSFER') NOT NULL,
+    txn_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- ==============================
+-- ADMINS TABLE
+-- ==============================
+CREATE TABLE admins (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    email VARCHAR(100),
+    role ENUM('SUPER_ADMIN','ADMIN') DEFAULT 'ADMIN'
+);
+
+-- ==============================
+-- ADMIN LOGS TABLE
+-- ==============================
+CREATE TABLE admin_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,
+    action VARCHAR(255),
+    ip_address VARCHAR(45),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+SELECT * FROM admins;
+
+UPDATE admins SET role = 'SUPER_ADMIN' WHERE username = 'yashwatsa';
+
+
