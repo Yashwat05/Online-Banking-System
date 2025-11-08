@@ -1,11 +1,11 @@
--- Drop and recreate the database
+-- Creating a Database
 DROP DATABASE IF EXISTS bankdb;
 CREATE DATABASE bankdb;
 USE bankdb;
 
--- ==============================
+
 -- USERS TABLE
--- ==============================
+
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -15,9 +15,8 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ==============================
+
 -- ACCOUNTS TABLE
--- ==============================
 CREATE TABLE accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -30,9 +29,8 @@ CREATE TABLE accounts (
         ON UPDATE CASCADE
 );
 
--- ==============================
+
 -- TRANSACTIONS TABLE
--- ==============================
 CREATE TABLE transactions (
     txn_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -46,9 +44,8 @@ CREATE TABLE transactions (
         ON UPDATE CASCADE
 );
 
--- ==============================
+
 -- ADMINS TABLE
--- ==============================
 CREATE TABLE admins (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -58,9 +55,8 @@ CREATE TABLE admins (
     role ENUM('SUPER_ADMIN','ADMIN') DEFAULT 'ADMIN'
 );
 
--- ==============================
--- ADMIN LOGS TABLE
--- ==============================
+
+-- ADMIN LOG TABLE
 CREATE TABLE admin_logs (
     log_id INT AUTO_INCREMENT PRIMARY KEY,
     admin_id INT NOT NULL,
@@ -74,6 +70,5 @@ CREATE TABLE admin_logs (
 
 SELECT * FROM admins;
 
-UPDATE admins SET role = 'SUPER_ADMIN' WHERE username = 'yashwatsa';
 
 
