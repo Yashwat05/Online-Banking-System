@@ -1,4 +1,4 @@
-package com.bankapp.model;
+package com.bankapp.backend.model;
 
 public class Account {
     private int accountId;        // unique ID in 'accounts' table (primary key)

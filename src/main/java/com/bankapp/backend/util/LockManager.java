@@ -1,4 +1,4 @@
-package com.bankapp.util;
+package com.bankapp.backend.util;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;

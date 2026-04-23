@@ -1,13 +1,14 @@
-package com.bankapp.ui;
+package com.bankapp.backend.ui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+
 import com.formdev.flatlaf.FlatLightLaf;
-import com.bankapp.model.User;
-import com.bankapp.model.Account;
-import com.bankapp.service.BankService;
-import com.bankapp.dao.AccountDAO;
+import com.bankapp.backend.model.User;
+import com.bankapp.backend.model.Account;
+import com.bankapp.backend.services.BankService;
+import com.bankapp.backend.dao.AccountDAO;
 
 public class Dashboard extends JFrame {
 
@@ -18,17 +19,21 @@ public class Dashboard extends JFrame {
     private JComboBox<String> accountDropdown;
     private List<Account> userAccounts;
 
-    public Dashboard(User user) {
-        //Apply FlatLaf theme
-        try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize FlatLaf theme");
-        }
+    private final String token;
+
+    public Dashboard(User user, String token) {
 
         this.currentUser = user;
+        this.token = token;
+
         this.bankService = new BankService(user);
         this.accountDAO = new AccountDAO();
+
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         setTitle("Dashboard - Welcome " + user.getName());
         setSize(700, 550);
@@ -36,19 +41,16 @@ public class Dashboard extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        //Colors & Fonts
         Color primaryColor = new Color(41, 128, 185);
         Color bgColor = new Color(245, 247, 250);
         Font titleFont = new Font("Segoe UI", Font.BOLD, 22);
         Font btnFont = new Font("Segoe UI", Font.PLAIN, 16);
 
-        // Welcome label
         JLabel welcomeLabel = new JLabel("Welcome, " + user.getName() + "!", JLabel.CENTER);
         welcomeLabel.setFont(titleFont);
         welcomeLabel.setForeground(primaryColor);
         welcomeLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
-        // Account selection panel
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         topPanel.setBackground(bgColor);
 
@@ -62,7 +64,6 @@ public class Dashboard extends JFrame {
         topPanel.add(selectLabel);
         topPanel.add(accountDropdown);
 
-        // Buttons layout
         JPanel buttonPanel = new JPanel(new GridLayout(4, 2, 20, 20));
         buttonPanel.setBackground(bgColor);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
@@ -76,7 +77,6 @@ public class Dashboard extends JFrame {
         JButton newAccBtn = createStyledButton("Open New Account", new Color(52, 73, 94), btnFont);
         JButton logoutBtn = createStyledButton("Logout", new Color(192, 57, 43), btnFont);
 
-        // Add all buttons to grid layout
         buttonPanel.add(depositBtn);
         buttonPanel.add(withdrawBtn);
         buttonPanel.add(transferBtn);
@@ -86,17 +86,17 @@ public class Dashboard extends JFrame {
         buttonPanel.add(newAccBtn);
         buttonPanel.add(logoutBtn);
 
-        // Add components to frame
         add(welcomeLabel, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
         add(topPanel, BorderLayout.SOUTH);
 
-        // Button actions
-        depositBtn.addActionListener(e -> new TransactionFrame(currentUser, "DEPOSIT").setVisible(true));
-        withdrawBtn.addActionListener(e -> new TransactionFrame(currentUser, "WITHDRAW").setVisible(true));
-        transferBtn.addActionListener(e -> new TransactionFrame(currentUser, "TRANSFER").setVisible(true));
+        // 🔥 ACTIONS
+        depositBtn.addActionListener(e -> new TransactionFrame(currentUser, token, "DEPOSIT").setVisible(true));
+        withdrawBtn.addActionListener(e -> new TransactionFrame(currentUser, token, "WITHDRAW").setVisible(true));
+        transferBtn.addActionListener(e -> new TransactionFrame(currentUser, token, "TRANSFER").setVisible(true));
+
         checkBalBtn.addActionListener(e -> showCurrentBalance());
-        historyBtn.addActionListener(e -> new TransactionHistoryFrame(currentUser).setVisible(true));
+        historyBtn.addActionListener(e -> new TransactionHistoryFrame(currentUser, token).setVisible(true));
         changePwdBtn.addActionListener(e -> handleChangePassword());
         newAccBtn.addActionListener(e -> openNewAccount());
         logoutBtn.addActionListener(e -> logout());
@@ -104,7 +104,9 @@ public class Dashboard extends JFrame {
         setVisible(true);
     }
 
-    // Load user's accounts into dropdown
+    // =========================
+    // LOAD ACCOUNTS
+    // =========================
     private void loadUserAccounts() {
         userAccounts = accountDAO.getAccountsByUserId(currentUser.getUserId());
         accountDropdown.removeAllItems();
@@ -118,12 +120,18 @@ public class Dashboard extends JFrame {
         }
     }
 
-    // Check balance (dialog)
+    // =========================
+    // CHECK BALANCE
+    // =========================
     private void showCurrentBalance() {
         int index = accountDropdown.getSelectedIndex();
+
         if (index >= 0 && index < userAccounts.size()) {
+
             Account acc = userAccounts.get(index);
-            double balance = accountDAO.getBalance(currentUser.getUserId(), acc.getAccountNumber());
+
+            double balance = bankService.getBalance(acc.getAccountNumber());
+
             JOptionPane.showMessageDialog(this,
                     "Account: " + acc.getAccountNumber() +
                             "\nType: " + acc.getAccountType() +
@@ -133,43 +141,50 @@ public class Dashboard extends JFrame {
         }
     }
 
-    // Change password
+    // =========================
+    // CHANGE PASSWORD
+    // =========================
     private void handleChangePassword() {
         String newPwd = JOptionPane.showInputDialog(this, "Enter your new password:");
+
         if (newPwd != null && !newPwd.trim().isEmpty()) {
+
             boolean updated = bankService.changePassword(currentUser.getUserId(), newPwd);
+
             JOptionPane.showMessageDialog(this,
-                    updated ? "Password updated successfully!" : "Failed to update password.",
-                    "Change Password",
-                    updated ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+                    updated ? "Password updated successfully!" : "Failed to update password.");
         }
     }
 
-    // Open new account
+    // =========================
+    // NEW ACCOUNT
+    // =========================
     private void openNewAccount() {
-        new NewAccountFrame(currentUser).setVisible(true);
-        loadUserAccounts(); // Refresh list
+        new NewAccountFrame(currentUser, token).setVisible(true);
+        loadUserAccounts();
     }
 
-    // Logout
+    // =========================
+    // LOGOUT
+    // =========================
     private void logout() {
-        JOptionPane.showMessageDialog(this, "You’ve been logged out successfully!");
+        JOptionPane.showMessageDialog(this, "Logged out!");
         dispose();
         new LoginFrame().setVisible(true);
     }
 
-    // Button styling helper
+    // =========================
+    // BUTTON STYLE
+    // =========================
     private JButton createStyledButton(String text, Color bgColor, Font font) {
+
         JButton button = new JButton(text);
         button.setFont(font);
         button.setBackground(bgColor);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
-        button.setOpaque(true);
 
-        // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(bgColor.darker());
@@ -178,6 +193,7 @@ public class Dashboard extends JFrame {
                 button.setBackground(bgColor);
             }
         });
+
         return button;
     }
 }

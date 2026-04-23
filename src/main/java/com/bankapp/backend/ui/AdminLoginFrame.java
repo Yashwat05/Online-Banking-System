@@ -1,10 +1,10 @@
-package com.bankapp.ui;
+package com.bankapp.backend.ui;
 
 import javax.swing.*;
 import java.awt.*;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.bankapp.model.Admin;
-import com.bankapp.service.AdminService;
+import com.bankapp.backend.model.Admin;
+import com.bankapp.backend.services.AdminService;
 
 public class AdminLoginFrame extends JFrame {
 

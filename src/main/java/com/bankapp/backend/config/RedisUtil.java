@@ -1,4 +1,4 @@
-package com.bankapp.backend.util;
+package com.bankapp.backend.config;
 
 import redis.clients.jedis.Jedis;
 

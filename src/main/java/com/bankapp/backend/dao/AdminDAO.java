@@ -1,7 +1,7 @@
-package com.bankapp.dao;
+package com.bankapp.backend.dao;
 
-import com.bankapp.model.Admin;
-import com.bankapp.config.DBConnection;
+import com.bankapp.backend.model.Admin;
+import com.bankapp.backend.config.DBConnection;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;

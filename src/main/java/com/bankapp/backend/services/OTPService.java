@@ -1,14 +1,14 @@
-package com.bankapp.service;
+package com.bankapp.backend.services;
 
 import redis.clients.jedis.Jedis;
-import com.bankapp.util.RedisUtil;
+import com.bankapp.backend.config.RedisUtil;
 
 public class OTPService
 {
 
-    private static final int OTP_EXPIRY_SECONDS = 300; // 5 min
-    private static final int MAX_ATTEMPTS = 5;
-    private static final int ATTEMPT_EXPIRY_SECONDS = 300;
+    private static final int OTP_EXPIRY_SECONDS = 120; // 2 min
+    private static final int MAX_ATTEMPTS = 3;
+    private static final int ATTEMPT_EXPIRY_SECONDS = 120;
 
     // =========================
     // STORE OTP
@@ -59,7 +59,7 @@ public class OTPService
             }
 
             // ✅ correct OTP
-            if (storedOtp.equals(inputOtp)) {
+            if (storedOtp.trim().equals(inputOtp.trim())) {
 
                 // delete OTP + attempts
                 jedis.del(otpKey);

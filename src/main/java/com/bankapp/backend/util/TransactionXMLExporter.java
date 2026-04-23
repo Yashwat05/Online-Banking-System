@@ -1,6 +1,6 @@
-package com.bankapp.util;
+package com.bankapp.backend.util;
 
-import com.bankapp.model.Transaction;
+import com.bankapp.backend.model.Transaction;
 import java.io.File;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;

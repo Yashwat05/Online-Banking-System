@@ -1,61 +1,50 @@
-package com.bankapp.ui;
+package com.bankapp.backend.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import com.bankapp.dao.AccountDAO;
-import com.bankapp.model.User;
+
+import com.bankapp.backend.model.User;
+import com.bankapp.backend.dao.AccountDAO;
 
 public class NewAccountFrame extends JFrame {
 
     private final User currentUser;
-    private JTextField accountNumberField, balanceField;
-    private JComboBox<String> accountTypeBox;
+    private final String token; // 🔥 carry token
     private final AccountDAO accountDAO = new AccountDAO();
 
-    public NewAccountFrame(User user) {
+    private JComboBox<String> typeBox;
+
+    public NewAccountFrame(User user, String token) {
         this.currentUser = user;
+        this.token = token;
 
         setTitle("Open New Account");
-        setSize(400, 300);
-        setLayout(new GridLayout(5, 2, 10, 10));
+        setSize(350, 200);
         setLocationRelativeTo(null);
+        setLayout(new GridLayout(3, 2, 10, 10));
 
-        JLabel accNumLabel = new JLabel("Account Number:");
-        JLabel accTypeLabel = new JLabel("Account Type:");
-        JLabel balanceLabel = new JLabel("Opening Balance:");
+        add(new JLabel("Account Type:"));
+        typeBox = new JComboBox<>(new String[]{"SAVINGS", "CURRENT"});
+        add(typeBox);
 
-        accountNumberField = new JTextField();
-        accountTypeBox = new JComboBox<>(new String[]{"Savings", "Current"});
-        balanceField = new JTextField("0.0");
-
-        JButton createBtn = new JButton("Create Account");
+        JButton createBtn = new JButton("Create");
         createBtn.addActionListener(e -> createAccount());
 
-        add(accNumLabel); add(accountNumberField);
-        add(accTypeLabel); add(accountTypeBox);
-        add(balanceLabel); add(balanceField);
-        add(new JLabel()); add(createBtn);
+        add(new JLabel());
+        add(createBtn);
+
+        setVisible(true);
     }
 
     private void createAccount() {
-        try {
-            String accNum = accountNumberField.getText().trim();
-            String accType = (String) accountTypeBox.getSelectedItem();
-            double balance = Double.parseDouble(balanceField.getText().trim());
+        String type = (String) typeBox.getSelectedItem();
 
-            boolean created = accountDAO.createAccountForExistingUser(
-                    currentUser.getUserId(), accNum, accType, balance
-            );
+        boolean success =
+                accountDAO.createAccount(currentUser.getUserId(), type);
 
-            if (created) {
-                JOptionPane.showMessageDialog(this, "Account created successfully!");
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error creating account. Try again.");
-            }
+        JOptionPane.showMessageDialog(this,
+                success ? "Account created!" : "Failed to create account");
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input!");
-        }
+        dispose();
     }
 }

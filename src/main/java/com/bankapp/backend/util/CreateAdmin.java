@@ -1,7 +1,7 @@
-package com.bankapp.util;
+package com.bankapp.backend.util;
 
-import com.bankapp.service.AdminService;
-import com.bankapp.config.DBConnection;
+import com.bankapp.backend.services.AdminService;
+import com.bankapp.backend.config.DBConnection;
 
 public class CreateAdmin {
     public static void main(String[] args) {

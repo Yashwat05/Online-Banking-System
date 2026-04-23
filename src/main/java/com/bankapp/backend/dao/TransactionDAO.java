@@ -1,10 +1,10 @@
-package com.bankapp.dao;
+package com.bankapp.backend.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import com.bankapp.config.DBConnection;
-import com.bankapp.model.Transaction;
+import com.bankapp.backend.config.DBConnection;
+import com.bankapp.backend.model.Transaction;
 
 public class TransactionDAO {
 

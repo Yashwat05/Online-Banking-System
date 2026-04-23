@@ -1,9 +1,9 @@
-package com.bankapp.service;
+package com.bankapp.backend.services;
 
-import com.bankapp.dao.AdminDAO;
-import com.bankapp.dao.UserDAO;
-import com.bankapp.model.Admin;
-import com.bankapp.model.User;
+import com.bankapp.backend.dao.AdminDAO;
+import com.bankapp.backend.dao.UserDAO;
+import com.bankapp.backend.model.Admin;
+import com.bankapp.backend.model.User;
 import java.util.List;
 
 public class AdminService {

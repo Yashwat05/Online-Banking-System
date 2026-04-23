@@ -1,4 +1,4 @@
-package com.bankapp.model;
+package com.bankapp.backend.model;
 
 import java.sql.Timestamp;
 

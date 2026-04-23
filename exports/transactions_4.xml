@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<transactions>
+  <transaction>
+    <userId>4</userId>
+    <fromAccount>740435375</fromAccount>
+    <amount>80000.0</amount>
+    <txnType>WITHDRAWAL</txnType>
+    <txnDate>2025-11-10 11:42:40.0</txnDate>
+  </transaction>
+</transactions>

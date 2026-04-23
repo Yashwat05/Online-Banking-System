@@ -3,7 +3,7 @@ package com.bankapp;
 import java.sql.Connection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.bankapp.config.DBConnection;
+import com.bankapp.backend.config.DBConnection;
 public class Main {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(10);

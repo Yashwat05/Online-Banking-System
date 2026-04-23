@@ -1,6 +1,6 @@
-package com.bankapp.util;
+package com.bankapp.backend.util;
 
-import com.bankapp.config.DBConnection;
+import com.bankapp.backend.config.DBConnection;
 import java.sql.*;
 
 public class PasswordMigration {

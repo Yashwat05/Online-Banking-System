@@ -1,9 +1,9 @@
-package com.bankapp.ui;
+package com.bankapp.backend.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import com.bankapp.dao.UserDAO;
-import com.bankapp.model.User;
+import com.bankapp.backend.dao.UserDAO;
+import com.bankapp.backend.model.User;
 import com.formdev.flatlaf.FlatLightLaf;
 
 public class SignupFrame extends JFrame {

@@ -1,4 +1,4 @@
-package com.bankapp.util;
+package com.bankapp.backend.util;
 
 import java.security.MessageDigest;
 

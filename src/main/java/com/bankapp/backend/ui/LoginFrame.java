@@ -1,29 +1,29 @@
-package com.bankapp.ui;
+package com.bankapp.backend.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import com.bankapp.dao.UserDAO;
-import com.bankapp.model.User;
+
+import com.bankapp.backend.api.AuthAPI;
+import com.bankapp.backend.model.User;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.bankapp.util.OTPGenerator;
-import com.bankapp.util.EmailSender;
-import com.bankapp.service.OTPService;
 
 public class LoginFrame extends JFrame {
 
     private JTextField emailField;
     private JPasswordField passwordField;
-    private final UserDAO userDAO;
+
+    // 🔥 Use API instead of DAO
+    private final AuthAPI authAPI;
 
     public LoginFrame() {
-        // Apply FlatLaf theme
+
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        userDAO = new UserDAO();
+        this.authAPI = new AuthAPI();
 
         setTitle("Bank Login");
         setSize(450, 320);
@@ -42,6 +42,7 @@ public class LoginFrame extends JFrame {
 
         JLabel emailLabel = new JLabel("Email:");
         JLabel passwordLabel = new JLabel("Password:");
+
         emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
@@ -52,7 +53,6 @@ public class LoginFrame extends JFrame {
         JButton signupBtn = new JButton("Sign Up");
         JButton exitBtn = new JButton("Exit");
 
-        // Button styling
         loginBtn.setBackground(new Color(25, 118, 210));
         loginBtn.setForeground(Color.WHITE);
         loginBtn.setFocusPainted(false);
@@ -65,7 +65,6 @@ public class LoginFrame extends JFrame {
         exitBtn.setForeground(Color.WHITE);
         exitBtn.setFocusPainted(false);
 
-        // Layout arrangement
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         add(title, gbc);
 
@@ -88,52 +87,47 @@ public class LoginFrame extends JFrame {
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
         add(exitBtn, gbc);
 
-        // Actions
-        loginBtn.addActionListener(e -> handleLogin());
+        loginBtn.addActionListener(e -> {
+            loginBtn.setEnabled(false);
+            handleLogin();
+        });
         signupBtn.addActionListener(e -> new SignupFrame().setVisible(true));
         exitBtn.addActionListener(e -> System.exit(0));
     }
 
-    // 🔥 UPDATED LOGIN FLOW WITH REDIS OTP
+    // 🔥 CLEAN LOGIN FLOW
     private void handleLogin() {
 
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter both email and password.");
+            JOptionPane.showMessageDialog(this,
+                    "Please enter both email and password.");
             return;
         }
 
-        User user = userDAO.login(email, password);
+        // 🔥 CREATE DTO
+        com.bankapp.backend.dto.LoginRequest req =
+                new com.bankapp.backend.dto.LoginRequest();
+        req.email = email;
+        req.password = password;
+
+        // 🔥 CALL API WITH DTO
+        User user = authAPI.login(req);
 
         if (user != null) {
 
-            // 1️⃣ Generate OTP
-            String otp = OTPGenerator.generateOTP();
+            JOptionPane.showMessageDialog(this,
+                    "OTP sent to your email.");
 
-            // 2️⃣ Store OTP in Redis (instead of memory)
-            OTPService.storeOTP(user.getEmail(), otp);
-
-            // 3️⃣ Send OTP via Email
-            boolean sent = EmailSender.sendOTP(user.getEmail(), otp);
-
-            if (sent) {
-
-                JOptionPane.showMessageDialog(this,
-                        "An OTP has been sent to your registered email.");
-
-                // 4️⃣ Open OTP screen (NO OTP PASSED NOW)
-                new VerifyOTPFrame(user).setVisible(true);
-                dispose();
-
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to send OTP. Please check email settings.");
-            }
+            new VerifyOTPFrame(user).setVisible(true);
+            dispose();
 
         } else {
-            JOptionPane.showMessageDialog(this, "Invalid email or password!");
+
+            JOptionPane.showMessageDialog(this,
+                    "Invalid email or password!");
         }
     }
 

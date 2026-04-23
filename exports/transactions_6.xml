@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<transactions>
+  <transaction>
+    <userId>6</userId>
+    <fromAccount>9079123146</fromAccount>
+    <toAccount>8210054252</toAccount>
+    <amount>30000.0</amount>
+    <txnType>TRANSFER</txnType>
+    <txnDate>2026-04-23 15:09:37.0</txnDate>
+  </transaction>
+  <transaction>
+    <userId>6</userId>
+    <fromAccount>9079123146</fromAccount>
+    <amount>15000.0</amount>
+    <txnType>WITHDRAWAL</txnType>
+    <txnDate>2026-04-23 15:05:29.0</txnDate>
+  </transaction>
+</transactions>

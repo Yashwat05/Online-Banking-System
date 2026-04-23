@@ -1,8 +1,8 @@
-package com.bankapp.ui;
+package com.bankapp.backend.ui;
 
-import com.bankapp.model.Admin;
-import com.bankapp.model.User;
-import com.bankapp.service.AdminService;
+import com.bankapp.backend.model.Admin;
+import com.bankapp.backend.model.User;
+import com.bankapp.backend.services.AdminService;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;

@@ -1,9 +1,9 @@
-package com.bankapp.dao;
+package com.bankapp.backend.dao;
 
 import java.sql.*;
 import java.util.*;
-import com.bankapp.config.DBConnection;
-import com.bankapp.model.Account;
+import com.bankapp.backend.config.DBConnection;
+import com.bankapp.backend.model.Account;
 
 public class AccountDAO {
 
@@ -120,6 +120,24 @@ public class AccountDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean createAccount(int userId, String type) {
+
+        String sql = "INSERT INTO accounts(user_id, account_type, balance) VALUES (?, ?, 0)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ps.setString(2, type);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

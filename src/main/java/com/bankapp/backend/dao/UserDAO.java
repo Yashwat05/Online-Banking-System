@@ -1,7 +1,7 @@
-package com.bankapp.dao;
+package com.bankapp.backend.dao;
 
-import com.bankapp.config.DBConnection;
-import com.bankapp.model.User;
+import com.bankapp.backend.config.DBConnection;
+import com.bankapp.backend.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
@@ -212,6 +212,33 @@ public class UserDAO {
             logger.log(Level.SEVERE, "User registration with account failed", e);
             return false;
         }
+    }
+
+    public User getUserByEmail(String email) {
+
+        String sql = "SELECT * FROM users WHERE email = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("user_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
