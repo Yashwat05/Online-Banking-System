@@ -3,15 +3,14 @@ package com.bankapp.ui;
 import javax.swing.*;
 import java.awt.*;
 import com.bankapp.model.User;
+import com.bankapp.service.OTPService;
 
 public class VerifyOTPFrame extends JFrame {
 
-    private final String correctOTP;
     private final User currentUser;
     private JTextField otpField;
 
-    public VerifyOTPFrame(User user, String otp) {
-        this.correctOTP = otp;
+    public VerifyOTPFrame(User user) {
         this.currentUser = user;
 
         setTitle("Two-Factor Authentication (2FA)");
@@ -32,13 +31,27 @@ public class VerifyOTPFrame extends JFrame {
     }
 
     private void verifyOTP() {
+
         String entered = otpField.getText().trim();
-        if (entered.equals(correctOTP)) {
+
+        if (entered.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter OTP.");
+            return;
+        }
+
+        // 🔥 REDIS-BASED VERIFICATION
+        boolean isValid = OTPService.verifyOTP(currentUser.getEmail(), entered);
+
+        if (isValid)
+        {
             JOptionPane.showMessageDialog(this, "Login Successful!");
             new Dashboard(currentUser).setVisible(true);
             dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Incorrect OTP. Please try again.");
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Invalid / expired OTP OR too many attempts.");
         }
     }
 }

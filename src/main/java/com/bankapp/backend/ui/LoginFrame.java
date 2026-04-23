@@ -7,6 +7,7 @@ import com.bankapp.model.User;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.bankapp.util.OTPGenerator;
 import com.bankapp.util.EmailSender;
+import com.bankapp.service.OTPService;
 
 public class LoginFrame extends JFrame {
 
@@ -87,14 +88,15 @@ public class LoginFrame extends JFrame {
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
         add(exitBtn, gbc);
 
-        // Action listeners
+        // Actions
         loginBtn.addActionListener(e -> handleLogin());
         signupBtn.addActionListener(e -> new SignupFrame().setVisible(true));
         exitBtn.addActionListener(e -> System.exit(0));
     }
 
-    // Updated login logic with 2FA (Email OTP)
+    // 🔥 UPDATED LOGIN FLOW WITH REDIS OTP
     private void handleLogin() {
+
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
 
@@ -106,21 +108,30 @@ public class LoginFrame extends JFrame {
         User user = userDAO.login(email, password);
 
         if (user != null) {
-            // Step 1️ Generate OTP
+
+            // 1️⃣ Generate OTP
             String otp = OTPGenerator.generateOTP();
 
-            // Step 2️ Send OTP via Email
+            // 2️⃣ Store OTP in Redis (instead of memory)
+            OTPService.storeOTP(user.getEmail(), otp);
+
+            // 3️⃣ Send OTP via Email
             boolean sent = EmailSender.sendOTP(user.getEmail(), otp);
 
             if (sent) {
-                JOptionPane.showMessageDialog(this, "An OTP has been sent to your registered email.");
 
-                // Step 3️ Open OTP verification window
-                new VerifyOTPFrame(user, otp).setVisible(true);
+                JOptionPane.showMessageDialog(this,
+                        "An OTP has been sent to your registered email.");
+
+                // 4️⃣ Open OTP screen (NO OTP PASSED NOW)
+                new VerifyOTPFrame(user).setVisible(true);
                 dispose();
+
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to send OTP. Please check your internet connection or email settings.");
+                JOptionPane.showMessageDialog(this,
+                        "Failed to send OTP. Please check email settings.");
             }
+
         } else {
             JOptionPane.showMessageDialog(this, "Invalid email or password!");
         }
